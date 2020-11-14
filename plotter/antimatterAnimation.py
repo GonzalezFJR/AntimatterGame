@@ -36,20 +36,24 @@ class antimatterAnimation:
       if ipart >= prevPart: self.plots.append(self.ax.plot([], [],'o',color = p.color, fillstyle=('none' if p.color=='k' else 'full') ))
       if mod:
         self.plots[ipart][0].set_color(p.color)
-        if p.color == 'k': self.plots[ipart][0].set_fillstyle('none')
+        if p.color == 'k': 
+          self.plots[ipart][0].set_fillstyle('none')
       self.plots[ipart][0].set_data(p.x, p.y); 
       values.append(self.plots[ipart][0])        
       ipart+=1
-    #text.set_text('test')
-    #values.append(text)
+    #self.leg = plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0.)
     return values
 
   def draw(self):
     particles = self.universe.GetParticles()
-    self.ax.set(xlabel='x', ylabel='y', title='Antimatter game', xlim=(-5,5), ylim=(-5,5))
+    self.ax.set(xlabel='x', ylabel='y', title='', xlim=(-5,5), ylim=(-5,5))
     self.ax.set_ylim(-self.width, self.width)
     self.ax.set_xlim(-self.height,self.height)
     #text = ax.text(-tam+0.1*tam, tam-0.1*tam,'')#, transform=spl.transAxes)
+    self.ax.plot([],[],'ob', label='electron')
+    self.ax.plot([],[],'or', label='positron')
+    self.ax.plot([],[],'ok', label='photon', fillstyle='none')
+    self.leg = self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol=3, mode="expand", borderaxespad=0.)
 
     def init():
       """ Initializing function """
@@ -61,6 +65,7 @@ class antimatterAnimation:
       return values
 
     universe = self.universe
+    plt.plot([],label='blah')
     anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(100000), interval=40, blit=True)
     print("Drawing...")
     plt.show()
