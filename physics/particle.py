@@ -4,6 +4,8 @@
   Question: maybe we can add an inplementation to represent a particle as an orbital - in case we want to represent atoms or any bound states (positronium?)
 """
 
+import numpy as np
+
 class particle:
 
   def __init__(self, pclass, x0=0, y0=0, vx0=0, vy0=0, mass=1, charge=1, name='electron', color='b'):
@@ -28,12 +30,16 @@ class particle:
   ### Kinematics
   ########################################################
 
-  def SetPos(self, x, y, z=0):
+  def SetPos(self, x, y=0, z=0):
+    if isinstance(x, list) or isinstance(x, np.ndarray):
+      x,y,z = x
     self.x = x
     self.y = y
     self.z = z
 
-  def SetVel(self, vx, vy, vz=0):
+  def SetVel(self, vx, vy=0, vz=0):
+    if isinstance(vx, list) or isinstance(vx, np.ndarray): 
+      vx,vy,vz = vx
     self.vx = vx
     self.vy = vy
     self.vz = vz

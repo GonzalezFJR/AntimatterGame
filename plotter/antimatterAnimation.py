@@ -13,8 +13,6 @@ tam = 1
 
 
 #ln, = plt.plot([], [], 'b.', markersize=2, alpha=0.03)
-xdata = []
-ydata = []
 
 class antimatterAnimation:
 
@@ -31,8 +29,6 @@ class antimatterAnimation:
     values = []
     ipart = 0
     for p in self.universe.GetParticles():
-      xdata.append(p.x)
-      ydata.append(p.y)
       self.plots[ipart][0].set_data(p.x, p.y); 
       values.append(self.plots[ipart][0])        
       ipart+=1
@@ -56,7 +52,7 @@ class antimatterAnimation:
   def draw(self):
     particles = self.universe.GetParticles()
     #f0 = plt.figure()#figsize = (10,10)); #f0.set_canvas(plt.gcf().canvas)
-    self.ax.set(xlabel='x', ylabel='y$', title='Antimatter game', xlim=(-5,5), ylim=(-5,5))
+    self.ax.set(xlabel='x', ylabel='y', title='Antimatter game', xlim=(-5,5), ylim=(-5,5))
     #pp = self.creaplot(particles)
     self.ax.set_ylim(-tam, tam)
     self.ax.set_xlim(-tam, tam)
@@ -72,7 +68,7 @@ class antimatterAnimation:
       return values
 
     universe = self.universe
-    anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=range(10000), interval=1, blit=True)
+    anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(1000000), interval=10, blit=True)
     print("Drawing...")
     plt.show()
     #ani.save('animation.mp4', fps=100, dpi=300)

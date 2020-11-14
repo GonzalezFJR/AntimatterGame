@@ -12,6 +12,7 @@ sys.path.append(basepath+'physics/')
 
 from physics.field import field, magneticField, electricField, fieldType
 from physics.particle import particle
+from physics.Boris import GetNextWithBoris
 
 class physics:
   def __init__(self, *objects):
@@ -45,10 +46,12 @@ class physics:
   def Update(self):
     for p in self.particles:
       # First update positions according to their velocities
-      p.UpdatePosition(self.dt)
+      # p.UpdatePosition(self.dt)
       # Then update velocities according to fields
-      vx, vy, vz = self.UpdateParticleVelocity(p)
-      p.SetVel(vx, vy, vz)
+      #vx, vy, vz = self.UpdateParticleVelocity(p)
+      x, v = self.UpdateParticleVelocityAndPosition(p)
+      p.SetPos(x)
+      p.SetVel(v)
 
   def SetTimeInterval(self, dt=0.01):
     self.dt = dt
@@ -57,7 +60,9 @@ class physics:
     self.nSteps = n
 
   def UpdateParticleVelocity(self, p):
-    """ For the moment, for a uniform field... """
+    """ For the moment, for a uniform field... 
+        This is old... not use it!
+    """
     q = p.charge; m = p.mass
     vx0, vy0, vz0 = p.GetVel()
     bx,  by,  bz  = self.magneticField.Get()
@@ -76,6 +81,13 @@ class physics:
     vz = vz0 + az*self.dt
     ### Update velocities
     return vx, vy, vz
+
+  def UpdateParticleVelocityAndPosition(self, p):
+    v = p.GetVel(); x = p.GetPos()
+    B = self.magneticField.Get()
+    E = self.electricField.Get()
+    x, v = GetNextWithBoris(self.dt, x, v, B, E, mass=p.mass, charge=p.charge)
+    return x, v
 
   ### Set methods
   ##################################################
