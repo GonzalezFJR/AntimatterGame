@@ -18,7 +18,7 @@ class antimatterAnimation:
     self.text = ''
     self.plots = []
     for p in self.universe.GetParticles(): 
-      self.plots.append(self.ax.plot([], [],'o',color = p.color))
+      self.plots.append(self.ax.plot([], [],'o',color = p.color, fillstyle='none' if p.color=='k' else 'full'))
     self.width = width
     self.height= self.width
     
@@ -26,10 +26,16 @@ class antimatterAnimation:
   ################################################
 
   def update(self, i):
-    self.universe.Update()
+    mod = self.universe.Update()
     values = []
     ipart = 0
+    #print('len(self.universe.GetParticles()) = ', len(self.universe.GetParticles()))
+    prevPart = len(self.plots)
     for p in self.universe.GetParticles():
+      if ipart >= prevPart: self.plots.append(self.ax.plot([], [],'o',color = p.color, fillstyle=('none' if p.color=='k' else 'full') ))
+      if mod:
+        self.plots[ipart][0].set_color(p.color)
+        if p.color == 'k': self.plots[ipart][0].set_fillstyle('none')
       self.plots[ipart][0].set_data(p.x, p.y); 
       values.append(self.plots[ipart][0])        
       ipart+=1

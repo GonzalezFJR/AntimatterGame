@@ -5,13 +5,14 @@
 """
 
 import os, sys
+import random, math
 ### Set the base path of the repository
 basepath = os.path.abspath(__file__).rsplit('/AntimatterGame/',1)[0]+'/AntimatterGame/'
 sys.path.append(basepath)
 sys.path.append(basepath+'physics/')
 
 from physics.field import field, magneticField, electricField, fieldType
-from physics.particle import particle
+from physics.particle import *
 from physics.Boris import GetNextWithBoris
 
 class physics:
@@ -27,7 +28,8 @@ class physics:
       elif isinstance(o, electricField): self.electricField = o
       else: print("WARNING -- unknown object : ", o)
     self.SetBorders(do=False, width=4)
-    self.interactionRadius = 0.05
+    self.interactionRadius = 0.15
+    self.photonSpeed = 4
 
   def Reset(self):
     """ Set fields to zero. Remove all particles. """
@@ -40,14 +42,25 @@ class physics:
   ### Evolution and matematics
   #################################################
 
+  def Scatter(self, p1, p2):
+    """ Scatter particles. We can add multiple interactions here """
+    cpro = p1.charge*p2.charge
+    if p1.pclass == p2.pclass or cpro == 1:
+      return self.ScatterPartilces(p1, p2)
+    elif cpro==-1:
+      return self.Anihilate(p1, p2)
+
   def Anihilate(self, p1, p2):
-    pass
-
-  def CreatePhotons(self, p1, p2):
-    pass
-
-  def ScatterWithBorder(self, p):
-    pass
+    """ Create two photons with random opposite directions and add them """
+    x = (p1.x+p2.x)/2
+    y = (p1.y+p2.y)/2
+    angle = random.uniform(0, 2*3.141592)
+    vx = self.photonSpeed*math.sin(angle)
+    vy = self.photonSpeed*math.cos(angle)
+    print("Adding two photons...")
+    photon1 = NewParticle('photon',x,y,vx,vy)
+    photon2 = NewParticle('photon',x,y,-vx,-vy)
+    return [photon1, photon2]
 
   def ScatterPartilces(self, p1, p2):
     pass
@@ -62,7 +75,7 @@ class physics:
       x, v = self.UpdateParticleVelocityAndPosition(p)
       p.SetPos(x)
       p.SetVel(v)
-    self.CheckDynamics()
+    return self.CheckDynamics()
 
   def SetTimeInterval(self, dt=0.01):
     self.dt = dt
@@ -104,7 +117,7 @@ class physics:
     """ Checks the position of the particles and performs dynamics """
     removeIndices = []
     for i in range(len(self.particles)):
-      if self.doBorders:
+      if self.doBorders and self.particles[i].charge != 0:
         if abs(self.particles[i].x) > abs(self.width ): self.particles[i].vx *= -1
         if abs(self.particles[i].y) > abs(self.height): self.particles[i].vy *= -1
       else:
@@ -112,11 +125,16 @@ class physics:
         elif abs(self.particles[i].y) > abs(self.height)*1.5: removeIndices.append(i)
       for j in range(i):
         if self.particles[i].GetDistance(self.particles[j]) <= self.interactionRadius:
-          self.CreatePhotons(self.particles[i], self.particles[j])
-          removeIndices.append(i)
-          removeIndices.append(j)
+          scatter = self.Scatter(self.particles[i], self.particles[j])
+          if isinstance(scatter, list) and len(scatter) == 2:
+            for f in scatter: self.AddParticle(f)
+            removeIndices.append(i)
+            removeIndices.append(j)
+          else: # They are scattering elastically
+            pass
     # Remove particles
     for i in sorted(removeIndices, reverse=True): del self.particles[i]
+    return len(removeIndices) != 0
 
   ### Set methods
   ##################################################
@@ -143,9 +161,11 @@ class physics:
   def SetInteractionRadius(self, r):
     self.interactionRadius = r
 
-  ### Drawing options
-  ##################################################
+  def SetPhtonSpeed(self, speed=2):
+    self.photonSpeed = speed
 
   def GetParticles(self):
     ''' Return particles to be drawn... '''
     return self.particles
+
+  ########################################################

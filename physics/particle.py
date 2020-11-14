@@ -73,16 +73,16 @@ class particle:
 
   def SetClass(self, c=1):
     """ c=1 if matter, c=-1 if antimatter """
-    self.c = c
+    self.pclass = c
 
   def SetName(self, name):
     self.name = name
 
   def IsMatter(self):
-    return self.c == 1
+    return self.pclass == 1
 
   def IsAntimatter(self):
-    return self.c != 1
+    return self.pclass != 1
 
   def GetName(self):
     return self.name
@@ -95,3 +95,18 @@ class particle:
   def SetRadius(self, rad):
     self.radius = rad
 
+def Electron(x0=0, y0=0, vx0=0, vy0=0, color=None):
+  return particle(1, x0, y0, vx0, vy0, mass=1, charge=-1, name='electron', color=color if not color is None else 'b')
+
+def Positron(x0=0, y0=0, vx0=0, vy0=0, color=None):
+  return particle(-1, x0, y0, vx0, vy0, mass=1, charge= 1, name='positron', color=color if not color is None else 'r')
+
+def Photon(x0=0, y0=0, vx0=0, vy0=0, color=None):
+  return particle(1, x0, y0, vx0, vy0, mass=1, charge= 0, name='photon', color='k')
+
+def NewParticle(name='electron', x0=0, y0=0, vx0=0, vy0=0, color=None):
+  if   name=='electron': return Electron(x0, y0, vx0, vy0, color)
+  elif name=='positron': return Positron(x0, y0, vx0, vy0, color)
+  elif name=='photon'  : return Photon  (x0, y0, vx0, vy0, color)
+  else:
+    print("ERROR: particle '%s' not yet implemented... "%name)
