@@ -6,9 +6,10 @@
 
 class particle:
 
-  def __init__(self, pclass, x0, y0, vx0, vy0, mass=1, charge=1, name='electron'):
-    self.InitParticle()
+  def __init__(self, pclass, x0, y0, vx0, vy0, mass=1, charge=1, name='electron', color='b'):
+    self.InitParticle(pclass, mass, charge, name)
     self.InitState(x0, y0, vx0, vy0)
+    self.SetColor(color)
 
   def InitParticle(self, pclass, mass=1, charge=1, name='electron'):
     self.SetClass(pclass)
@@ -16,22 +17,38 @@ class particle:
     self.SetMass(mass)
     self.SetName(name)
 
-  def InitState(x0=0, y0=0, vx0=0, vy0=0):
+  def InitState(self, x0=0, y0=0, vx0=0, vy0=0):
     self.x = x0
     self.y = y0
+    self.z = 0
     self.vx = vx0
     self.vy = vy0
+    self.vz = 0
 
   ### Kinematics
   ########################################################
 
-  def SetPos(self, x, y):
+  def SetPos(self, x, y, z=0):
     self.x = x
     self.y = y
+    self.z = z
 
-  def SetVel(self, vx, vy):
-    self.xy = vx
+  def SetVel(self, vx, vy, vz=0):
+    self.vy = vx
     self.vy = vy
+    self.vz = vz
+
+  def GetVel(self):
+    return [self.vx, self.vy, self.vz]
+
+  def GetPos(self):
+    return [self.x, self.y, self.z]
+
+  def UpdatePosition(self, dt=1):
+    x = self.x + self.vx*dt
+    y = self.y + self.vy*dt
+    z = self.x + self.vz*dt
+    self.SetPos(x,y,z)
 
   ### Properties
   ########################################################
@@ -64,6 +81,6 @@ class particle:
   def SetColor(self, color):
     self.color = color
 
-  def SetRadiut(self, rad):
+  def SetRadius(self, rad):
     self.radius = rad
 

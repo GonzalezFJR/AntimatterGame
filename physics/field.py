@@ -3,9 +3,9 @@
 """
 
 class fieldType:
-  self.none     = 0
-  self.magnetic = 1
-  self.electric = 2
+  none     = 0
+  magnetic = 1
+  electric = 2
 
 class field:
   def __init__(self, x=0, y=0, z=0, fieldType=fieldType.none):
@@ -18,7 +18,7 @@ class field:
   def SetType(self, t=fieldType.none):
     self.type = t
 
-  def SetField(self, x, y, z):
+  def SetField(self, x, y, z=0):
     self.x = x
     self.y = y
     self.z = z
@@ -53,6 +53,19 @@ class field:
     self.y = 0
     self.z = 0
 
+  def SetZfield(self, mag):
+    self.x = 0
+    self.y = 0
+    self.z = mag
+
+  def SetVertical(self, mag=1):
+    if mag>0: self.SetVerticalUp(mag)
+    else    : self.SetVerticalDown(mag)
+
+  def SetHorizontal(self, mag=1):
+    if mag>0: self.SetHorizontalUp(mag)
+    else    : self.SetHorizontalDown(mag)
+
   def GetValue(self):
     return [x,y]
 
@@ -64,6 +77,9 @@ class field:
 
   def GetType(self):
     return self.type
+
+  def Get(self):
+    return [self.x, self.y, self.z]
 
   ### Drawing options
   #############################################
@@ -88,26 +104,26 @@ class field:
 class magneticField(field):
   """ A field with magnetic type """ 
 
-  def __init__(self, x, y):
+  def __init__(self, z=0, x=0, y=0):
     self.x = x
     self.y = y
+    self.z = z
     self.SetType(fieldType.magnetic)
 
   def SetType(self, t=None):
-    print("WARNING: this is a magnetic field. Type cannot be overwriten")
     return
 
 
 class electricField(field):
   """ A field with electric type """
 
-  def __init__(self, x, y):
+  def __init__(self, x=0, y=0, z=0):
     self.x = x
     self.y = y
+    self.z = z
     self.SetType(fieldType.electric)
 
   def SetType(self, t=None):
-    print("WARNING: this is an electric field. Type cannot be overwriten")
     return
 
 
