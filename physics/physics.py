@@ -36,8 +36,7 @@ class physics:
     self.magneticField = magneticField()
     self.electricField = electricField()
     self.particles.clear()
-    self.SetTimeInterval()
-    self.SetNsteps(1)
+    #self.SetTimeInterval()
     
   ### Evolution and matematics
   #################################################
@@ -78,9 +77,6 @@ class physics:
 
   def SetTimeInterval(self, dt=0.01):
     self.dt = dt
-
-  def SetNsteps(self, n=100):
-    self.nSteps = n
 
   def UpdateParticleVelocity(self, p):
     """ For the moment, for a uniform field... 
@@ -146,7 +142,7 @@ class physics:
     self.particles.append(part)
 
   def SetMagneticField(self, mag):
-    if isintance(mag, magneticField): self.magneticField = magField
+    if isinstance(mag, magneticField): self.magneticField = magField
     else: 
       # I assume this is a magnitud and direction in z axis
       self.magneticField.SetZfield(mag)
