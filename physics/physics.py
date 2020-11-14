@@ -57,7 +57,6 @@ class physics:
     angle = random.uniform(0, 2*3.141592)
     vx = self.photonSpeed*math.sin(angle)
     vy = self.photonSpeed*math.cos(angle)
-    print("Adding two photons...")
     photon1 = NewParticle('photon',x,y,vx,vy)
     photon2 = NewParticle('photon',x,y,-vx,-vy)
     return [photon1, photon2]
@@ -118,8 +117,13 @@ class physics:
     removeIndices = []
     for i in range(len(self.particles)):
       if self.doBorders and self.particles[i].charge != 0:
-        if abs(self.particles[i].x) > abs(self.width ): self.particles[i].vx *= -1
-        if abs(self.particles[i].y) > abs(self.height): self.particles[i].vy *= -1
+        if abs(self.particles[i].x) > abs(self.width ): 
+          self.particles[i].vx *= -1
+          self.particles[i].x = self.width if self.particles[i].x > self.width else -self.width
+        if abs(self.particles[i].y) > abs(self.height): 
+          d = self.height-self.particles[i].y
+          self.particles[i].vy *= -1
+          self.particles[i].y = self.height if self.particles[i].y > self.height else -self.height
       else:
         if   abs(self.particles[i].x) > abs(self.width )*1.5: removeIndices.append(i)
         elif abs(self.particles[i].y) > abs(self.height)*1.5: removeIndices.append(i)
@@ -169,3 +173,16 @@ class physics:
     return self.particles
 
   ########################################################
+
+  def CreateRandomParticles(self, n, name, maxSpeed=1):
+    for i in range(n):
+      x = random.uniform(-self.width, self.width)
+      y = random.uniform(-self.height, self.height)
+      vx = random.uniform(-maxSpeed, maxSpeed)
+      vy = random.uniform(-maxSpeed, maxSpeed)
+      self.AddParticle(NewParticle(name, x, y, vx, vy))
+
+  def CreateRandomEE(self, nElectrons, nPositrons=None, maxSpeed=1):
+    if nPositrons == None: nPositrons = nElectrons
+    self.CreateRandomParticles(nElectrons, 'electron', maxSpeed)
+    self.CreateRandomParticles(nPositrons, 'positron', maxSpeed)

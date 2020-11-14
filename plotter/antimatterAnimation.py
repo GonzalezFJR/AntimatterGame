@@ -12,11 +12,12 @@ import subprocess
 
 class antimatterAnimation:
 
-  def __init__(self, universe, width=4):
+  def __init__(self, universe, width=4, savename=None):
     self.fig, self.ax = plt.subplots()
     self.universe = universe
     self.text = ''
     self.plots = []
+    self.savename = savename
     for p in self.universe.GetParticles(): 
       self.plots.append(self.ax.plot([], [],'o',color = p.color, fillstyle='none' if p.color=='k' else 'full'))
     self.width = width
@@ -60,9 +61,9 @@ class antimatterAnimation:
       return values
 
     universe = self.universe
-    anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(1000000), interval=10, blit=True)
+    anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(100000), interval=40, blit=True)
     print("Drawing...")
     plt.show()
-    #ani.save('animation.mp4', fps=100, dpi=300)
+    #if self.savename is not None: anim.save(self.savename+'.mp4', fps=20, dpi=300)
     return anim
 

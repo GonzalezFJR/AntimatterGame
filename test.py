@@ -1,7 +1,7 @@
 from physics.field    import field, magneticField, electricField, fieldType
 from physics.particle import *
 from physics.physics  import physics
-from plotter.antimatterAnimation import antimatterAnimation as AA
+from plotter.antimatterAnimation import antimatterAnimation
 
 width = 3
 B = magneticField(2)
@@ -15,8 +15,10 @@ myUniverse.AddParticle(NewParticle('positron', 1, 1, 0.4, 0.5))
 myUniverse.AddParticle(NewParticle('electron', 0.3,  0, -0.4, 0.))
 myUniverse.AddParticle(NewParticle('positron', -0.3, 0, -0.4, 0.))
 myUniverse.AddParticle(NewParticle('positron', 0, 1, 0.4, 0.0))
-myUniverse.SetTimeInterval(0.01)
+
+#myUniverse.CreateRandomEE(40)
+myUniverse.SetTimeInterval(0.05)
 myUniverse.SetBorders(1, width=width)
 
-aa = AA(myUniverse, width=width)
+aa = antimatterAnimation(myUniverse, width=width, savename='test')
 aa.draw()
