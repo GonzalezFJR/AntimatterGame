@@ -56,6 +56,11 @@ class particle:
     z = self.x + self.vz*dt
     self.SetPos(x,y,z)
 
+  def GetDistance(self, p):
+    dx = self.x - p.x
+    dy = self.y - p.y
+    return np.sqrt(dx*dx + dy*dy)
+
   ### Properties
   ########################################################
   def SetCharge(self, charge=1):

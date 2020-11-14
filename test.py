@@ -3,12 +3,14 @@ from physics.particle import particle
 from physics.physics  import physics
 from plotter.antimatterAnimation import antimatterAnimation as AA
 
+width = 3
 B = magneticField(2)
-E = electricField(0.,0.)
+E = electricField(1.,0.)
 electron = particle(1,  x0=0,   y0=0,   vx0=0, vy0=0.5, mass=1, charge=-1, color='b')
-positron = particle(-1, x0=0.5, y0=0.5, vx0=0, vy0=0.5, mass=1, charge= 1, color='r')
+positron = particle(-1, x0=0.5,  y0=0.5, vx0=0, vy0=0.5, mass=1, charge= 1, color='r')
 myUniverse = physics(B, E, electron, positron)
 myUniverse.SetTimeInterval(0.01)
+myUniverse.SetBorders(1, width=width)
 
-aa = AA(myUniverse)
+aa = AA(myUniverse, width=width)
 aa.draw()

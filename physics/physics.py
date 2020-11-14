@@ -15,6 +15,7 @@ from physics.particle import particle
 from physics.Boris import GetNextWithBoris
 
 class physics:
+
   def __init__(self, *objects):
     self.magneticField = None
     self.electricField = None
@@ -25,6 +26,8 @@ class physics:
       elif isinstance(o, magneticField): self.magneticField = o
       elif isinstance(o, electricField): self.electricField = o
       else: print("WARNING -- unknown object : ", o)
+    self.SetBorders(do=False, width=4)
+    self.interactionRadius = 0.05
 
   def Reset(self):
     """ Set fields to zero. Remove all particles. """
@@ -37,13 +40,20 @@ class physics:
   ### Evolution and matematics
   #################################################
 
-  def CheckAnihilation(self):
+  def Anihilate(self, p1, p2):
     pass
 
-  def CreatePhotons(self):
+  def CreatePhotons(self, p1, p2):
+    pass
+
+  def ScatterWithBorder(self, p):
+    pass
+
+  def ScatterPartilces(self, p1, p2):
     pass
 
   def Update(self):
+    """ Update the status of the universe """
     for p in self.particles:
       # First update positions according to their velocities
       # p.UpdatePosition(self.dt)
@@ -52,6 +62,7 @@ class physics:
       x, v = self.UpdateParticleVelocityAndPosition(p)
       p.SetPos(x)
       p.SetVel(v)
+    self.CheckDynamics()
 
   def SetTimeInterval(self, dt=0.01):
     self.dt = dt
@@ -89,6 +100,24 @@ class physics:
     x, v = GetNextWithBoris(self.dt, x, v, B, E, mass=p.mass, charge=p.charge)
     return x, v
 
+  def CheckDynamics(self):
+    """ Checks the position of the particles and performs dynamics """
+    removeIndices = []
+    for i in range(len(self.particles)):
+      if self.doBorders:
+        if abs(self.particles[i].x) > abs(self.width ): self.particles[i].vx *= -1
+        if abs(self.particles[i].y) > abs(self.height): self.particles[i].vy *= -1
+      else:
+        if   abs(self.particles[i].x) > abs(self.width )*1.5: removeIndices.append(i)
+        elif abs(self.particles[i].y) > abs(self.height)*1.5: removeIndices.append(i)
+      for j in range(i):
+        if self.particles[i].GetDistance(self.particles[j]) <= self.interactionRadius:
+          self.CreatePhotons(self.particles[i], self.particles[j])
+          removeIndices.append(i)
+          removeIndices.append(j)
+    # Remove particles
+    for i in sorted(removeIndices, reverse=True): del self.particles[i]
+
   ### Set methods
   ##################################################
   def AddParticle(self, part):
@@ -105,6 +134,14 @@ class physics:
     elif y == None: self.electricField.SetHorizontal(x)
     elif x == None: self.electricField.SetVertical(y)
     else: self.electricField.SetField(x,y)
+
+  def SetBorders(self, do=True, width=4, height=None):
+    self.doBorders = do
+    self.width = width
+    self.height = height if not height is None else width
+
+  def SetInteractionRadius(self, r):
+    self.interactionRadius = r
 
   ### Drawing options
   ##################################################
