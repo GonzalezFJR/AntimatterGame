@@ -1,2 +1,2 @@
 # AntimatterGame
-Game for the Ethereal Antimatter group in the CERN ccience communication hackatom
+Game for the Ethereal Antimatter group in the CERN science communication hackatom
