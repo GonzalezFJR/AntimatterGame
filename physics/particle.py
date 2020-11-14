@@ -6,7 +6,7 @@
 
 class particle:
 
-  def __init__(self, pclass, x0, y0, vx0, vy0, mass=1, charge=1, name='electron', color='b'):
+  def __init__(self, pclass, x0=0, y0=0, vx0=0, vy0=0, mass=1, charge=1, name='electron', color='b'):
     self.InitParticle(pclass, mass, charge, name)
     self.InitState(x0, y0, vx0, vy0)
     self.SetColor(color)
@@ -34,7 +34,7 @@ class particle:
     self.z = z
 
   def SetVel(self, vx, vy, vz=0):
-    self.vy = vx
+    self.vx = vx
     self.vy = vy
     self.vz = vz
 
@@ -44,7 +44,7 @@ class particle:
   def GetPos(self):
     return [self.x, self.y, self.z]
 
-  def UpdatePosition(self, dt=1):
+  def UpdatePosition(self, dt=0.1):
     x = self.x + self.vx*dt
     y = self.y + self.vy*dt
     z = self.x + self.vz*dt
@@ -54,7 +54,7 @@ class particle:
   ########################################################
   def SetCharge(self, charge=1):
     """ Charge in units of e charge """
-    self.charge = 1
+    self.charge = charge
 
   def SetMass(self, mass=1):
     """ Mass in units of e mass (0.511 MeV) """

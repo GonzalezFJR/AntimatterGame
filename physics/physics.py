@@ -47,7 +47,8 @@ class physics:
       # First update positions according to their velocities
       p.UpdatePosition(self.dt)
       # Then update velocities according to fields
-      self.UpdateParticleVelocity(p)
+      vx, vy, vz = self.UpdateParticleVelocity(p)
+      p.SetVel(vx, vy, vz)
 
   def SetTimeInterval(self, dt=0.01):
     self.dt = dt
@@ -63,7 +64,7 @@ class physics:
     ex,  ey,  ez  = self.electricField.Get()
     ### Acceleration caused by the magnetic field
     ax = (vy0*bz - vz0*by)*q/m
-    ay = (vx0*bz - vz0*bx)*q/m
+    ay = (vz0*bx - vx0*bz)*q/m
     az = (vx0*by - vy0*bx)*q/m
     ### Acceleration caused by the electric field
     ax += q*ex
@@ -74,7 +75,7 @@ class physics:
     vy = vy0 + ay*self.dt
     vz = vz0 + az*self.dt
     ### Update velocities
-    p.SetVel(vx, vy, vz)
+    return vx, vy, vz
 
   ### Set methods
   ##################################################
