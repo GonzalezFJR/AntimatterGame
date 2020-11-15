@@ -47,9 +47,9 @@ class antimatterAnimation:
     maxB = self.width/2
     maxE = self.width/2
 
-    self.magFieldSlider   = Slider(axmag,  'Magnetic field', -maxB, maxB, valinit=bz if abs(bz)<maxB else 0)#, valstep=delta_f)
-    self.elecFieldSliderX = Slider(axelecX, 'Electric field (X)', -maxE, maxE, valinit=ex if abs(ex)<maxE else 0)
-    self.elecFieldSliderY = Slider(axelecY, 'Electric field (Y)', -maxE, maxE, valinit=ey if abs(ey)<maxE else 0)
+    self.magFieldSlider   = Slider(axmag,  'Magnetic field', -maxB, maxB, valinit=0)#bz if abs(bz)<maxB else 0)#, valstep=delta_f)
+    self.elecFieldSliderX = Slider(axelecX, 'Electric field (X)', -maxE, maxE, valinit=0)#ex if abs(ex)<maxE else 0)
+    self.elecFieldSliderY = Slider(axelecY, 'Electric field (Y)', -maxE, maxE, valinit=0)#ey if abs(ey)<maxE else 0)
     
   ################################################
   ################################################
@@ -101,6 +101,9 @@ class antimatterAnimation:
       self.universe.Reset()
       self.universe.SetMagneticField(0)
       self.universe.SetElectricField(0,0)
+      self.magFieldSlider.set_val(0)
+      self.elecFieldSliderX.set_val(0)
+      self.elecFieldSliderY.set_val(0)
 
     ##########################################################
     ### Events 
