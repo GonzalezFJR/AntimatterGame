@@ -30,6 +30,7 @@ class physics:
     self.SetBorders(do=False, width=4)
     self.interactionRadius = 0.15
     self.photonSpeed = 4
+    self.nElec, self.nPosi, self.nPhot = 0,0,0
 
   def Reset(self):
     """ Set fields to zero. Remove all particles. """
@@ -140,6 +141,9 @@ class physics:
   ##################################################
   def AddParticle(self, part):
     self.particles.append(part)
+    if   part.name == 'electron': self.nElec+=1
+    elif part.name == 'positron': self.nPosi+=1
+    elif part.name == 'photon'  : self.nPhot+=1
 
   def SetMagneticField(self, mag):
     if isinstance(mag, magneticField): self.magneticField = magField
@@ -153,10 +157,11 @@ class physics:
     elif x == None: self.electricField.SetVertical(y)
     else: self.electricField.SetField(x,y)
 
-  def SetBorders(self, do=True, width=4, height=None):
-    self.doBorders = do
-    self.width = width
-    self.height = height if not height is None else width
+  def SetBorders(self, do=True, width=None, height=None):
+    self.doBorders = do 
+    if not width is None: 
+      self.width = width 
+      self.height = height if not height is None else width
 
   def SetInteractionRadius(self, r):
     self.interactionRadius = r

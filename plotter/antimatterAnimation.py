@@ -14,6 +14,7 @@ sys.path.append(basepath)
 sys.path.append(basepath+'physics/')
 from physics.particle import *
 from matplotlib.widgets import Slider, Button, RadioButtons
+from matplotlib.text import Text
 
 axcolor = 'lightgoldenrodyellow'
 
@@ -32,16 +33,23 @@ class antimatterAnimation:
       self.plots.append(self.ax.plot([], [],'o',color = p.color, fillstyle='none' if p.color=='k' else 'full'))
     self.width = width
     self.height= self.width
+    self.randomSpeedModule = 0.5
     
     resetax = plt.axes([0.77, 0.025, 0.14, 0.04])
     self.button = Button(resetax, 'Reset', color=axcolor, hovercolor='0.975')
+
+    self.rmtax    = plt.axes([0.62, 0.025, 0.14, 0.04])
+    self.rmbutton = Button(self.rmtax, 'Borders OFF', color=axcolor, hovercolor='0.975')
     
-    rax = plt.axes([0.77, 0.068, 0.14, 0.15], facecolor=axcolor)
+    rax = plt.axes([0.77, 0.075, 0.14, 0.16], facecolor=axcolor)
     self.particleSelector = RadioButtons(rax, ('electron', 'positron'), active=0)
 
-    axmag   = plt.axes([0.20, 0.08, 0.45, 0.03], facecolor=axcolor)
-    axelecX = plt.axes([0.20, 0.14, 0.45, 0.03], facecolor=axcolor)
-    axelecY = plt.axes([0.20, 0.20, 0.45, 0.03], facecolor=axcolor)
+    createax = plt.axes([0.62, 0.075, 0.14, 0.16], facecolor=axcolor)
+    self.createRandomPartButtom = Button(createax, 'Create 50\nparticles', color=axcolor)
+
+    axmag   = plt.axes([0.20, 0.05, 0.35, 0.03], facecolor=axcolor)
+    axelecX = plt.axes([0.20, 0.11, 0.35, 0.03], facecolor=axcolor)
+    axelecY = plt.axes([0.20, 0.17, 0.35, 0.03], facecolor=axcolor)
     bx,by,bz = self.universe.magneticField.Get()
     ex,ey,ez = self.universe.electricField.Get()
     maxB = self.width/2
@@ -50,6 +58,9 @@ class antimatterAnimation:
     self.magFieldSlider   = Slider(axmag,  'Magnetic field', -maxB, maxB, valinit=0)#bz if abs(bz)<maxB else 0)#, valstep=delta_f)
     self.elecFieldSliderX = Slider(axelecX, 'Electric field (X)', -maxE, maxE, valinit=0)#ex if abs(ex)<maxE else 0)
     self.elecFieldSliderY = Slider(axelecY, 'Electric field (Y)', -maxE, maxE, valinit=0)#ey if abs(ey)<maxE else 0)
+
+    axrndmspeed = plt.axes([0.93, 0.50, 0.03, 0.15], facecolor=axcolor)
+    self.randomSpeedSlider = Slider(axrndmspeed, 'Particle\nspeed', 0.1, 1, valinit=0.5, orientation='vertical')
     
   ################################################
   ################################################
@@ -111,12 +122,13 @@ class antimatterAnimation:
     #on_press event
     def on_press(event):
       if event.y < 140: return
-      print('you pressed', event.button, event.xdata, event.ydata)
+      if event.x > 575: return
+      print('you pressed', event.button, event.xdata, event.ydata, event.x, event.y)
       if event.xdata == 0 and event.ydata == 0: return
       if event.xdata is None: return
-      vx = random.uniform(-1,1)
-      vy = random.uniform(-1,1)
       if abs(event.xdata) > self.width or abs(event.ydata) > self.height: return
+      vx = random.uniform(-2,2)*self.randomSpeedModule
+      vy = random.uniform(-2,2)*self.randomSpeedModule
       self.universe.AddParticle(NewParticle(self.partmode, event.xdata, event.ydata, vx, vy))
       self.mod = True
 
@@ -136,6 +148,20 @@ class antimatterAnimation:
       print('Moving electric filed Y to: ', event)
       self.universe.SetElectricField(y=event)
 
+    def updateRandomSpeed(event):
+      print('Moving the random speed to: ', event)
+      self.randomSpeedModule = event
+
+    def changeBorders(event):
+      print('Moving borders...')
+      self.universe.SetBorders(not self.universe.doBorders)
+      label = 'Borders ON' if self.universe.doBorders else 'Borders OFF'
+      self.rmbutton.label.set_text(label)
+
+    def createRandomPart(event):
+      print('Creating random particles...')
+      self.universe.CreateRandomEE(25, 25, maxSpeed=self.randomSpeedModule)
+
     universe = self.universe
     plt.plot([],label='blah')
     anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(1000), interval=80, blit=True)
@@ -145,9 +171,12 @@ class antimatterAnimation:
     self.fig.canvas.mpl_connect('button_press_event', on_press)
     self.button.on_clicked(reset)
     self.particleSelector.on_clicked(particleMode)
+    self.createRandomPartButtom.on_clicked(createRandomPart)
     self.magFieldSlider.on_changed(updateMagField)
     self.elecFieldSliderX.on_changed(updateElecFieldX)
     self.elecFieldSliderY.on_changed(updateElecFieldY)
+    self.randomSpeedSlider.on_changed(updateRandomSpeed)
+    self.rmbutton.on_clicked(changeBorders)
 
     plt.show()
     #if self.savename is not None: anim.save(self.savename+'.mp4', fps=20, dpi=300)
