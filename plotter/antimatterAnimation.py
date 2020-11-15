@@ -45,8 +45,10 @@ class antimatterAnimation:
     rax = plt.axes([0.77, 0.075, 0.14, 0.16], facecolor=axcolor)
     self.particleSelector = RadioButtons(rax, ('electron', 'positron'), active=0)
 
-    createax = plt.axes([0.62, 0.075, 0.14, 0.16], facecolor=axcolor)
-    self.createRandomPartButtom = Button(createax, 'Create 50\nparticles', color=axcolor)
+    createax  = plt.axes([0.62, 0.160, 0.14, 0.075], facecolor=axcolor)
+    self.createRandomPartButtom  = Button(createax, 'Create 25\nparticles', color=axcolor)
+    createax2 = plt.axes([0.62, 0.075, 0.14, 0.075], facecolor=axcolor)
+    self.createRandomPartButtom2 = Button(createax2, 'Create 25\nantiparticles', color=axcolor)
 
     axmag   = plt.axes([0.20, 0.05, 0.35, 0.03], facecolor=axcolor)
     axelecX = plt.axes([0.20, 0.11, 0.35, 0.03], facecolor=axcolor)
@@ -167,7 +169,11 @@ class antimatterAnimation:
 
     def createRandomPart(event):
       print('Creating random particles...')
-      self.universe.CreateRandomEE(25, 25, maxSpeed=self.randomSpeedModule)
+      self.universe.CreateRandomParticles(25, 'electron', maxSpeed=self.randomSpeedModule)
+
+    def createRandomPart2(event):
+      print('Creating random antiparticles...')
+      self.universe.CreateRandomParticles(25, 'positron', maxSpeed=self.randomSpeedModule)
 
     universe = self.universe
     plt.plot([],label='blah')
@@ -179,6 +185,7 @@ class antimatterAnimation:
     self.button.on_clicked(reset)
     self.particleSelector.on_clicked(particleMode)
     self.createRandomPartButtom.on_clicked(createRandomPart)
+    self.createRandomPartButtom2.on_clicked(createRandomPart2)
     self.magFieldSlider.on_changed(updateMagField)
     self.elecFieldSliderX.on_changed(updateElecFieldX)
     self.elecFieldSliderY.on_changed(updateElecFieldY)
