@@ -154,8 +154,9 @@ class antimatterAnimation:
 
     def changeBorders(event):
       print('Moving borders...')
-      self.universe.SetBorders(not self.universe.doBorders)
-      label = 'Borders ON' if self.universe.doBorders else 'Borders OFF'
+      status = self.universe.doBorders
+      label = 'Borders ON' if status else 'Borders OFF'
+      self.universe.SetBorders(not status)
       self.rmbutton.label.set_text(label)
 
     def createRandomPart(event):
