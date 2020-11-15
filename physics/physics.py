@@ -134,7 +134,11 @@ class physics:
           else: # They are scattering elastically
             pass
     # Remove particles
-    for i in sorted(removeIndices, reverse=True): del self.particles[i]
+    for i in sorted(removeIndices, reverse=True): 
+      if   self.particles[i].name == 'electron': self.nElec -= 1
+      elif self.particles[i].name == 'positron': self.nPosi -= 1
+      elif self.particles[i].name == 'photon'  : self.nPhot -= 1
+      del self.particles[i]
     return len(removeIndices) != 0
 
   ### Set methods
