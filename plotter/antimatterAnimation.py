@@ -27,6 +27,7 @@ class antimatterAnimation:
     self.universe = universe
     self.text = ''
     self.plots = []
+    self.legplots = []
     self.partmode = 'electron'
     self.savename = savename
     for p in self.universe.GetParticles(): 
@@ -85,6 +86,10 @@ class antimatterAnimation:
       ipart+=1
     #self.leg = plt.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol=2, mode="expand", borderaxespad=0.)
     self.mod = False
+    #ipart+=1
+    #self.plots.append(self.ax.plot([],[],'ob', label='electron'))
+    #values.append(self.plots[ipart][0])
+    
     return values
 
   def draw(self):
@@ -92,11 +97,11 @@ class antimatterAnimation:
     self.ax.set(xlabel='x', ylabel='y', title='', xlim=(-5,5), ylim=(-5,5))
     self.ax.set_ylim(-self.width, self.width)
     self.ax.set_xlim(-self.height,self.height)
-    #text = ax.text(-tam+0.1*tam, tam-0.1*tam,'')#, transform=spl.transAxes)
     self.ax.plot([],[],'ob', label='electron')
     self.ax.plot([],[],'or', label='positron')
     self.ax.plot([],[],'ok', label='photon', fillstyle='none')
-    self.leg = self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol=3, mode="expand", borderaxespad=0.)
+    self.leg = self.ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc='lower left', ncol=3, mode="expand", borderaxespad=0., framealpha=0.8)
+    #self.text1 = self.ax.text(-self.width+2*self.width*0.21, self.height+0.28,'[100]')#, transform=spl.transAxes)
 
     def init():
       """ Initializing function """
@@ -121,8 +126,9 @@ class antimatterAnimation:
 
     #on_press event
     def on_press(event):
-      if event.y < 140: return
-      if event.x > 575: return
+      mX, mY = self.fig.get_size_inches()*self.fig.dpi
+      if event.y < mY*0.291: return
+      if event.x > mX*0.8984: return
       print('you pressed', event.button, event.xdata, event.ydata, event.x, event.y)
       if event.xdata == 0 and event.ydata == 0: return
       if event.xdata is None: return
