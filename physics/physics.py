@@ -140,6 +140,7 @@ class physics:
   ### Set methods
   ##################################################
   def AddParticle(self, part):
+    if self.nElec + self.nPosi > 150: return
     self.particles.append(part)
     if   part.name == 'electron': self.nElec+=1
     elif part.name == 'positron': self.nPosi+=1
