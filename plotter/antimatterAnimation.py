@@ -33,30 +33,23 @@ class antimatterAnimation:
     self.width = width
     self.height= self.width
     
-    #on_press event
-    def on_press(event):
-      #print('you pressed', event.button, event.xdata, event.ydata)
-      vx = random.uniform(-1,1)
-      vy = random.uniform(-1,1)
-      if event.xdata == 0 and event.ydata == 0: return
-      if event.xdata is None: return
-      if abs(event.xdata) > self.width or abs(event.ydata) > self.height: return
-      self.universe.AddParticle(NewParticle(self.partmode, event.xdata, event.ydata, vx, vy))
-      self.mod = True
-    cid = self.fig.canvas.mpl_connect('button_press_event', on_press)
-
     resetax = plt.axes([0.77, 0.025, 0.14, 0.04])
     self.button = Button(resetax, 'Reset', color=axcolor, hovercolor='0.975')
     
     rax = plt.axes([0.77, 0.068, 0.14, 0.15], facecolor=axcolor)
     self.particleSelector = RadioButtons(rax, ('electron', 'positron'), active=0)
 
-    axmag  = plt.axes([0.25, 0.1, 0.45, 0.03], facecolor=axcolor)
-    axelec = plt.axes([0.25, 0.15,0.45, 0.03], facecolor=axcolor)
+    axmag   = plt.axes([0.20, 0.08, 0.45, 0.03], facecolor=axcolor)
+    axelecX = plt.axes([0.20, 0.14, 0.45, 0.03], facecolor=axcolor)
+    axelecY = plt.axes([0.20, 0.20, 0.45, 0.03], facecolor=axcolor)
+    bx,by,bz = self.universe.magneticField.Get()
+    ex,ey,ez = self.universe.electricField.Get()
+    maxB = self.width/2
+    maxE = self.width/2
 
-    self.magFieldSlider  = Slider(axmag,  'Magnetic field', -1., 1.0, valinit=0)#, valstep=delta_f)
-    self.elecFieldSlider = Slider(axelec, 'Electric field', -1., 1.0, valinit=0)
-
+    self.magFieldSlider   = Slider(axmag,  'Magnetic field', -maxB, maxB, valinit=bz if abs(bz)<maxB else 0)#, valstep=delta_f)
+    self.elecFieldSliderX = Slider(axelecX, 'Electric field (X)', -maxE, maxE, valinit=ex if abs(ex)<maxE else 0)
+    self.elecFieldSliderY = Slider(axelecY, 'Electric field (Y)', -maxE, maxE, valinit=ey if abs(ey)<maxE else 0)
     
   ################################################
   ################################################
@@ -106,18 +99,53 @@ class antimatterAnimation:
     def reset(event):
       print('Resetting...')
       self.universe.Reset()
+      self.universe.SetMagneticField(0)
+      self.universe.SetElectricField(0,0)
+
+    ##########################################################
+    ### Events 
+
+    #on_press event
+    def on_press(event):
+      if event.y < 140: return
+      print('you pressed', event.button, event.xdata, event.ydata)
+      if event.xdata == 0 and event.ydata == 0: return
+      if event.xdata is None: return
+      vx = random.uniform(-1,1)
+      vy = random.uniform(-1,1)
+      if abs(event.xdata) > self.width or abs(event.ydata) > self.height: return
+      self.universe.AddParticle(NewParticle(self.partmode, event.xdata, event.ydata, vx, vy))
+      self.mod = True
 
     def particleMode(event):
       print('Selecting particle: ', event)
       self.partmode = str(event)
       
+    def updateMagField(event):
+      print('Moving magnetic filed to: ', event)
+      self.universe.SetMagneticField(event)
+
+    def updateElecFieldX(event):
+      print('Moving electric filed X to: ', event)
+      self.universe.SetElectricField(x=event)
+
+    def updateElecFieldY(event):
+      print('Moving electric filed Y to: ', event)
+      self.universe.SetElectricField(y=event)
 
     universe = self.universe
     plt.plot([],label='blah')
-    anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(100000), interval=100, blit=True)
+    anim = ani.FuncAnimation(self.fig,self.update,init_func=init, frames=(1000), interval=80, blit=True)
     print("Drawing...")
+
+    #### Events
+    self.fig.canvas.mpl_connect('button_press_event', on_press)
     self.button.on_clicked(reset)
     self.particleSelector.on_clicked(particleMode)
+    self.magFieldSlider.on_changed(updateMagField)
+    self.elecFieldSliderX.on_changed(updateElecFieldX)
+    self.elecFieldSliderY.on_changed(updateElecFieldY)
+
     plt.show()
     #if self.savename is not None: anim.save(self.savename+'.mp4', fps=20, dpi=300)
     return anim

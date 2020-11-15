@@ -147,7 +147,7 @@ class physics:
       # I assume this is a magnitud and direction in z axis
       self.magneticField.SetZfield(mag)
 
-  def SetElecticField(self, x=None, y=None):
+  def SetElectricField(self, x=None, y=None):
     if isinstance(x, electricField): self.electricField = x
     elif y == None: self.electricField.SetHorizontal(x)
     elif x == None: self.electricField.SetVertical(y)
